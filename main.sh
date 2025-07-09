@@ -7,14 +7,22 @@ include_CpGs="${5}"
 outDensityDir="${6}"
 ncores="${7}"
 
-# # debug
-# inMutsDir=./exampleData/inputMutations/
-# inTargetDir=./exampleData/inputTargetDir/
-# outMatrixDir=./exampleData/outputMatrix/
-# outMutsDir=./exampleData/outputMutations/
-# include_CpGs="no"
-# outDensityDir=./exampleData/outputDensityDir/
-# ncores=1
+# debug
+inMutsDir=./exampleData/inputMutations/
+inTargetDir=./exampleData/inputTarget/
+outMatrixDir=./exampleData/outputMatrix/
+outMutsDir=./exampleData/outputMutations/
+include_CpGs="no"
+outDensityDir=./exampleData/outputDensity/
+ncores=1
+
+# show arguments
+echo "inMutsDir: ${inMutsDir}"
+echo "inTargetDir: ${inTargetDir}"
+echo "outMatrixDir: ${outMatrixDir}"
+echo "include_CpGs: ${include_CpGs}"
+echo "inDensityDir: ${outDensityDir}"
+echo "ncores: ${ncores}"
 
 # get chromosomes with mutations
 chrs=$(find "${inMutsDir}" -type f -exec basename {} \;)
@@ -25,7 +33,7 @@ inMutsFiles=($(echo "${chrs}" | sed 's,^,'"${inMutsDir}"','))
 inTargetFiles=($(echo "${chrs}" | sed 's,^,'"${inTargetDir}"','))
 outMatrixFiles=($(echo "${chrs}" | sed 's,^,'"${outMatrixDir}"','))
 outMutsFiles=($(echo "${chrs}" | sed 's,^,'"${outMutsDir}"','))
-parallel --link --progress --dry-run -j"${ncores}" Rscript mutmat.r ::: \
+parallel --link --progress -j"${ncores}" Rscript mutmat.r ::: \
     "${inMutsFiles[@]}" ::: \
     "${inTargetFiles[@]}" ::: \
     "${outMatrixFiles[@]}" ::: \
@@ -37,9 +45,9 @@ find "${outMatrixDir}" -type f -name "chr*.tsv.gz" -exec sh -c "zcat {} | tail -
 gzip -f "${outMatrixDir}"all.tsv
 
 # caculate mutational densities by window and gene, by chromosome
-echo "Mutation Density..."
+echo "MUTATION DENSITY..."
 outDensityFiles=($(echo "${chrs}" | sed 's,^,'"${outDensityDir}"','))
-parallel --dry-run --link --progress --dry-run -j"${ncores}" Rscript density.r ::: \
+parallel --link --progress -j"${ncores}" Rscript density.r ::: \
     "${outMutsFiles[@]}" ::: \
     "${inTargetFiles[@]}" ::: \
     "${outMatrixDir}"all.tsv.gz ::: \

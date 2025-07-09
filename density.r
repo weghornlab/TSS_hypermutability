@@ -9,14 +9,14 @@ inMatrixFile <- args[3]
 include_CpGs <- args[4]
 outFile <- args[5]
 
-# # debug
-# inMutFile <- "./exampleData/outputMutations/chr22.tsv.gz"
-# inTargetFile <- "./exampleData/inputTarget/chr22.tsv.gz"
-# inMatrixFile <- "./exampleData/outputMatrix/all.tsv.gz"
-# include_CpGs <- "no"
-# outFile <- "./exampleData/outputDensity/chr22.tsv.gz"
+# debug
+inMutsFile <- "./exampleData/outputMutations/chr22.tsv.gz"
+inTargetFile <- "./exampleData/inputTarget/chr22.tsv.gz"
+inMatrixFile <- "./exampleData/outputMatrix/all.tsv.gz"
+include_CpGs <- "no"
+outFile <- "./exampleData/outputDensity/chr22.tsv.gz"
 
-transcript_mutations <- fread(inMutFile, nThread = 1)
+transcript_mutations <- fread(inMutsFile, nThread = 1)
 transcript_mutations$mutID = paste0(transcript_mutations$chr, "_", transcript_mutations$end, "_", transcript_mutations$REF, ">", transcript_mutations$ALT)
 transcript_mutations$strand3mer = str_sub(transcript_mutations$strand_kmer,2,-2) # had to add this column
 transcript_mutations$strand3mer_strandALT = paste0(transcript_mutations$strand3mer, ">", transcript_mutations$strand_ALT) # had to add this column
@@ -79,7 +79,7 @@ global_mutation_matrix <- preglobal_mutation_matrix[
 global_mutation_matrix[, "mutation_rate" := mutation_counts / site_counts]
 
 # clean some memory before continuing
-rm(list = ls()[-which(ls() %in% c("all_sites50kb", "transcript_mutations", "global_mutation_matrix", "CHR", "args", "mutations_dataset"))]); gc()
+rm(list = ls()[-which(ls() %in% c("outFile", "all_sites50kb", "transcript_mutations", "global_mutation_matrix", "CHR", "args", "mutations_dataset"))]); gc()
 all_sites50kb[, c("start", "end", "strand", "kmer", "strand3mer", "CpG") := NULL] # release some memory
 all_sites50kb <- all_sites50kb[!grepl("N", strand_kmer)]
 transcript_mutations <- transcript_mutations[!grepl("N", strand_kmer)]
