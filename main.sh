@@ -7,14 +7,14 @@ include_CpGs="${5}"
 outDensityDir="${6}"
 ncores="${7}"
 
-# debug
-inMutsDir=./exampleData/inputMutations/
-inTargetDir=./exampleData/inputTarget/
-outMatrixDir=./exampleData/outputMatrix/
-outMutsDir=./exampleData/outputMutations/
-include_CpGs="no"
-outDensityDir=./exampleData/outputDensity/
-ncores=1
+# # debug
+# inMutsDir=./exampleData/inputMutations/
+# inTargetDir=./exampleData/inputTarget/
+# outMatrixDir=./exampleData/outputMatrix/
+# outMutsDir=./exampleData/outputMutations/
+# include_CpGs="no"
+# outDensityDir=./exampleData/outputDensity/
+# ncores=1
 
 # show arguments
 echo "inMutsDir: ${inMutsDir}"
@@ -54,7 +54,7 @@ parallel --link --progress -j"${ncores}" Rscript density.r ::: \
     "${include_CpGs}" ::: \
     "${outDensityFiles[@]}"
 
-# join mutational matrices across chromosomes
+# join genomic window mutational densities across chromosomes
 find "${outDensityFiles}" -type f -name "chr*.tsv.gz" -exec sh -c "zcat {} | head -n1" \; | uniq > "${outDensityDir}"all.tsv
 find "${outDensityFiles}" -type f -name "chr*.tsv.gz" -exec sh -c "zcat {} | tail --quiet -n +2" \; >> "${outDensityDir}"all.tsv
 gzip -f "${outDensityDir}"all.tsv
