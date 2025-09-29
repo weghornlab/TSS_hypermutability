@@ -186,4 +186,4 @@ sites_mutations[is.na(T_G_mutations), T_G_mutations := 0L]
 sites_mutations[is.na(A_T_mutations), A_T_mutations := 0L]
 sites_mutations[is.na(T_A_mutations), T_A_mutations := 0L]
 
-fwrite(sites_mutations, outFile, nThread = 1)
+fwrite(sites_mutations, outFile, nThread = 1, sep = "\t")
